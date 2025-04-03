@@ -14,6 +14,10 @@ import { useNavigate } from "react-router-dom";
 
 const UserWidget = ({ userId, picturePath }) => {
   const [user, setUser] = useState(null);
+  const [socialProfiles, setSocialProfiles] = useState({
+    twitter: { url: "", username: "" },
+    linkedin: { url: "", username: "" }
+  });
   const { palette } = useTheme();
   const navigate = useNavigate();
   const token = useSelector((state) => state.token);
@@ -28,6 +32,16 @@ const UserWidget = ({ userId, picturePath }) => {
     });
     const data = await response.json();
     setUser(data);
+    
+    // Get social profiles
+    const socialResponse = await fetch(`http://localhost:3000/users/${userId}/social-profiles`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (socialResponse.ok) {
+      const socialData = await socialResponse.json();
+      setSocialProfiles(socialData);
+    }
   };
 
   useEffect(() => {
@@ -125,10 +139,38 @@ const UserWidget = ({ userId, picturePath }) => {
               <Typography color={main} fontWeight="500">
                 Twitter
               </Typography>
-              <Typography color={medium}>Social Network</Typography>
+              <Typography color={medium}>
+                {socialProfiles.twitter.username || "Not Connected"}
+              </Typography>
             </Box>
           </FlexBetween>
-          <EditOutlined sx={{ color: main }} />
+          <EditOutlined 
+            sx={{ color: main, cursor: "pointer" }} 
+            onClick={async () => {
+              const username = prompt("Enter your Twitter username:");
+              if (username) {
+                const response = await fetch(
+                  `http://localhost:3000/users/${userId}/social-profiles`,
+                  {
+                    method: "PATCH",
+                    headers: { 
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                      platform: "twitter",
+                      username,
+                      url: `https://twitter.com/${username}`
+                    })
+                  }
+                );
+                if (response.ok) {
+                  const updatedProfiles = await response.json();
+                  setSocialProfiles(updatedProfiles);
+                }
+              }
+            }}
+          />
         </FlexBetween>
 
         <FlexBetween gap="1rem">
@@ -136,12 +178,40 @@ const UserWidget = ({ userId, picturePath }) => {
             <img src="../assets/linkedin.png" alt="linkedin" />
             <Box>
               <Typography color={main} fontWeight="500">
-                Linkedin
+                LinkedIn
               </Typography>
-              <Typography color={medium}>Network Platform</Typography>
+              <Typography color={medium}>
+                {socialProfiles.linkedin.username || "Not Connected"}
+              </Typography>
             </Box>
           </FlexBetween>
-          <EditOutlined sx={{ color: main }} />
+          <EditOutlined 
+            sx={{ color: main, cursor: "pointer" }} 
+            onClick={async () => {
+              const username = prompt("Enter your LinkedIn username:");
+              if (username) {
+                const response = await fetch(
+                  `http://localhost:3000/users/${userId}/social-profiles`,
+                  {
+                    method: "PATCH",
+                    headers: { 
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                      platform: "linkedin",
+                      username,
+                      url: `https://linkedin.com/in/${username}`
+                    })
+                  }
+                );
+                if (response.ok) {
+                  const updatedProfiles = await response.json();
+                  setSocialProfiles(updatedProfiles);
+                }
+              }
+            }}
+          />
         </FlexBetween>
       </Box>
     </WidgetWrapper>

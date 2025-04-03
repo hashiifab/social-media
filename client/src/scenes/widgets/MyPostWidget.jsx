@@ -17,6 +17,8 @@ import {
   Button,
   IconButton,
   useMediaQuery,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import Dropzone from "react-dropzone";
@@ -31,9 +33,11 @@ const MyPostWidget = ({ picturePath }) => {
   const [isImage, setIsImage] = useState(false);
   const [isClip, setIsClip] = useState(false);
   const [isAttachment, setIsAttachment] = useState(false);
+  const [isAudio, setIsAudio] = useState(false);
   const [image, setImage] = useState(null);
   const [clip, setClip] = useState(null);
   const [attachment, setAttachment] = useState(null);
+  const [audio, setAudio] = useState(null);
   const [post, setPost] = useState("");
   const { palette } = useTheme();
   const { _id } = useSelector((state) => state.user);
@@ -41,6 +45,7 @@ const MyPostWidget = ({ picturePath }) => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const mediumMain = palette.neutral.mediumMain;
   const medium = palette.neutral.medium;
+  const [mobileMenu, setMobileMenu] = useState(null);
 
   const handlePost = async () => {
     const formData = new FormData();
@@ -62,6 +67,11 @@ const MyPostWidget = ({ picturePath }) => {
       formData.append("attachmentPath", attachment.name);
     }
 
+    if (audio) {
+      formData.append("audio", audio);
+      formData.append("audioPath", audio.name);
+    }
+
     const response = await fetch(`http://localhost:3000/posts`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
@@ -72,10 +82,12 @@ const MyPostWidget = ({ picturePath }) => {
     setImage(null);
     setClip(null);
     setAttachment(null);
+    setAudio(null);
     setPost("");
     setIsImage(false);
     setIsClip(false);
     setIsAttachment(false);
+    setIsAudio(false);
   };
 
   return (
@@ -229,27 +241,76 @@ const MyPostWidget = ({ picturePath }) => {
         </Box>
       )}
 
+      {isAudio && (
+        <Box
+          border={`1px solid ${medium}`}
+          borderRadius="5px"
+          mt="1rem"
+          p="1rem"
+        >
+          <Dropzone
+            acceptedFiles=".mp3,.wav,.m4a"
+            multiple={false}
+            onDrop={(acceptedFiles) => setAudio(acceptedFiles[0])}
+          >
+            {({ getRootProps, getInputProps }) => (
+              <FlexBetween>
+                <Box
+                  {...getRootProps()}
+                  border={`2px dashed ${palette.primary.main}`}
+                  p="1rem"
+                  width="100%"
+                  sx={{ "&:hover": { cursor: "pointer" } }}
+                >
+                  <input {...getInputProps()} />
+                  {!audio ? (
+                    <p>Add Audio Here</p>
+                  ) : (
+                    <FlexBetween>
+                      <Typography>{audio.name}</Typography>
+                      <EditOutlined />
+                    </FlexBetween>
+                  )}
+                </Box>
+                {audio && (
+                  <IconButton
+                    onClick={() => setAudio(null)}
+                    sx={{ width: "15%" }}
+                  >
+                    <DeleteOutlined />
+                  </IconButton>
+                )}
+              </FlexBetween>
+            )}
+          </Dropzone>
+        </Box>
+      )}
+
       <Divider sx={{ margin: "1.25rem 0" }} />
 
       <FlexBetween>
-        <FlexBetween gap="0.25rem" onClick={() => {
-          setIsImage(!isImage);
-          if (isClip) setIsClip(false);
-        }}>
-          <ImageOutlined sx={{ color: mediumMain }} />
-          <Typography
-            color={mediumMain}
-            sx={{ "&:hover": { cursor: "pointer", color: medium } }}
-          >
-            Image
-          </Typography>
-        </FlexBetween>
-
         {isNonMobileScreens ? (
           <>
             <FlexBetween gap="0.25rem" onClick={() => {
+              setIsImage(!isImage);
+              if (isClip) setIsClip(false);
+              if (isAttachment) setIsAttachment(false);
+              if (isAudio) setIsAudio(false);
+            }}>
+              <ImageOutlined sx={{ color: mediumMain }} />
+              <Typography
+                color={mediumMain}
+                sx={{ "&:hover": { cursor: "pointer", color: medium } }}
+              >
+                Image
+              </Typography>
+            </FlexBetween>
+
+            <FlexBetween gap="0.25rem" onClick={() => {
               setIsClip(!isClip);
               if (isImage) setIsImage(false);
+              if (isAttachment) setIsAttachment(false);
+              if (isAudio) setIsAudio(false);
             }}>
               <VideoLibraryOutlined sx={{ color: mediumMain }} />
               <Typography 
@@ -264,6 +325,7 @@ const MyPostWidget = ({ picturePath }) => {
               setIsAttachment(!isAttachment);
               if (isImage) setIsImage(false);
               if (isClip) setIsClip(false);
+              if (isAudio) setIsAudio(false);
             }}>
               <AttachFileOutlined sx={{ color: mediumMain }} />
               <Typography 
@@ -274,15 +336,75 @@ const MyPostWidget = ({ picturePath }) => {
               </Typography>
             </FlexBetween>
 
-            <FlexBetween gap="0.25rem">
+            <FlexBetween gap="0.25rem" onClick={() => {
+              setIsAudio(!isAudio);
+              if (isImage) setIsImage(false);
+              if (isClip) setIsClip(false);
+              if (isAttachment) setIsAttachment(false);
+            }}>
               <MicOutlined sx={{ color: mediumMain }} />
-              <Typography color={mediumMain}>Audio</Typography>
+              <Typography 
+                color={mediumMain}
+                sx={{ "&:hover": { cursor: "pointer", color: medium } }}
+              >
+                Audio
+              </Typography>
             </FlexBetween>
           </>
         ) : (
-          <FlexBetween gap="0.25rem">
-            <MoreHorizOutlined sx={{ color: mediumMain }} />
-          </FlexBetween>
+          <Box sx={{ position: "relative" }}>
+            <IconButton onClick={(e) => setMobileMenu(e.currentTarget)}>
+              <MoreHorizOutlined sx={{ color: mediumMain }} />
+            </IconButton>
+            <Menu
+              anchorEl={mobileMenu}
+              open={Boolean(mobileMenu)}
+              onClose={() => setMobileMenu(null)}
+              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+              transformOrigin={{ vertical: "top", horizontal: "left" }}
+            >
+              <MenuItem onClick={() => {
+                setIsImage(!isImage);
+                if (isClip) setIsClip(false);
+                if (isAttachment) setIsAttachment(false);
+                if (isAudio) setIsAudio(false);
+                setMobileMenu(null);
+              }}>
+                <ImageOutlined sx={{ color: mediumMain, mr: 1 }} />
+                <Typography>Image</Typography>
+              </MenuItem>
+              <MenuItem onClick={() => {
+                setIsClip(!isClip);
+                if (isImage) setIsImage(false);
+                if (isAttachment) setIsAttachment(false);
+                if (isAudio) setIsAudio(false);
+                setMobileMenu(null);
+              }}>
+                <VideoLibraryOutlined sx={{ color: mediumMain, mr: 1 }} />
+                <Typography>Clip</Typography>
+              </MenuItem>
+              <MenuItem onClick={() => {
+                setIsAttachment(!isAttachment);
+                if (isImage) setIsImage(false);
+                if (isClip) setIsClip(false);
+                if (isAudio) setIsAudio(false);
+                setMobileMenu(null);
+              }}>
+                <AttachFileOutlined sx={{ color: mediumMain, mr: 1 }} />
+                <Typography>Attachment</Typography>
+              </MenuItem>
+              <MenuItem onClick={() => {
+                setIsAudio(!isAudio);
+                if (isImage) setIsImage(false);
+                if (isClip) setIsClip(false);
+                if (isAttachment) setIsAttachment(false);
+                setMobileMenu(null);
+              }}>
+                <MicOutlined sx={{ color: mediumMain, mr: 1 }} />
+                <Typography>Audio</Typography>
+              </MenuItem>
+            </Menu>
+          </Box>
         )}
 
         <Button

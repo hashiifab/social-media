@@ -3,8 +3,9 @@ import {
   FavoriteBorderOutlined,
   FavoriteOutlined,
   ShareOutlined,
+  PictureAsPdfOutlined,
 } from "@mui/icons-material";
-import { Box, Divider, IconButton, Typography, useTheme, Button } from "@mui/material";
+import { Box, Divider, IconButton, Typography, useTheme, Button, TextField } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import Friend from "components/Friend";
 import WidgetWrapper from "components/WidgetWrapper";
@@ -26,6 +27,7 @@ const PostWidget = ({
   comments,
 }) => {
   const [isComments, setIsComments] = useState(false);
+  const [comment, setComment] = useState("");
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const loggedInUserId = useSelector((state) => state.user._id);
@@ -113,18 +115,33 @@ const PostWidget = ({
           
           {/* Preview for PDF files */}
           {attachmentPath.toLowerCase().endsWith(".pdf") && (
-            <Box sx={{ width: "100%", height: "300px", overflow: "hidden", borderRadius: "0.5rem", border: `1px solid ${palette.neutral.light}` }}>
-              <object
-                data={`http://localhost:3000/assets/${attachmentPath}`}
-                type="application/pdf"
-                width="100%"
-                height="100%"
-                style={{ borderRadius: "0.5rem" }}
-              >
-                <Typography color={main} sx={{ p: "1rem", textAlign: "center" }}>
-                  PDF tidak dapat ditampilkan. Silakan download untuk melihat.
-                </Typography>
-              </object>
+            <Box sx={{ width: "100%", overflow: "hidden", borderRadius: "0.5rem", border: `1px solid ${palette.neutral.light}`, p: "1rem" }}>
+              <FlexBetween>
+                <Box sx={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <PictureAsPdfOutlined sx={{ color: "#f40f02", fontSize: "2rem" }} />
+                  <Typography color={main} fontWeight="500">
+                    {attachmentPath.split("/").pop()}
+                  </Typography>
+                </Box>
+                <a 
+                  href={`http://localhost:3000/assets/${attachmentPath}`} 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: "none" }}
+                >
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: palette.primary.main,
+                      color: palette.background.alt,
+                      "&:hover": { backgroundColor: palette.primary.dark },
+                      borderRadius: "3rem",
+                    }}
+                  >
+                   View PDF
+                  </Button>
+                </a>
+              </FlexBetween>
             </Box>
           )}
           
@@ -187,6 +204,47 @@ const PostWidget = ({
             </Box>
           ))}
           <Divider />
+          <Box display="flex" gap="1rem" alignItems="center" mt="0.5rem">
+            <TextField
+              fullWidth
+              variant="standard"
+              placeholder="Tulis komentar..."
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              sx={{
+                backgroundColor: palette.neutral.light,
+                borderRadius: "2rem",
+                padding: "0.5rem 2rem",
+              }}
+            />
+            <Button
+              disabled={!comment}
+              onClick={async () => {
+                const response = await fetch(
+                  `http://localhost:3000/posts/${postId}/comment`,
+                  {
+                    method: "PATCH",
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ userId: loggedInUserId, comment }),
+                  }
+                );
+                const updatedPost = await response.json();
+                dispatch(setPost({ post: updatedPost }));
+                setComment("");
+              }}
+              sx={{
+                color: palette.background.alt,
+                backgroundColor: palette.primary.main,
+                borderRadius: "3rem",
+                "&:hover": { backgroundColor: palette.primary.dark },
+              }}
+            >
+              Kirim
+            </Button>
+          </Box>
         </Box>
       )}
     </WidgetWrapper>
