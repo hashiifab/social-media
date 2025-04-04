@@ -54,6 +54,3 @@ mern-social-media/
 ## 👤 Author
 - GitHub: [@hashiifabdillah](https://github.com/hashiifab)
 - LinkedIn: [Hashiif Abdillah](https://www.linkedin.com/in/hashiif-abdillah-665373297/)
-
-## 📄 License
-MIT
