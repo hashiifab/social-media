@@ -26,7 +26,7 @@ const UserWidget = ({ userId, picturePath }) => {
   const main = palette.neutral.main;
 
   const getUser = async () => {
-    const response = await fetch(`http://localhost:3000/users/${userId}`, {
+    const response = await fetch(`http://localhost:3001/users/${userId}`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -34,7 +34,7 @@ const UserWidget = ({ userId, picturePath }) => {
     setUser(data);
     
     // Get social profiles
-    const socialResponse = await fetch(`http://localhost:3000/users/${userId}/social-profiles`, {
+    const socialResponse = await fetch(`http://localhost:3001/users/${userId}/social-profiles`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -69,6 +69,12 @@ const UserWidget = ({ userId, picturePath }) => {
         gap="0.5rem"
         pb="1.1rem"
         onClick={() => navigate(`/profile/${userId}`)}
+        sx={{
+          transition: "transform 0.2s ease-in-out",
+          "&:hover": {
+            transform: "translateY(-3px)",
+          },
+        }}
       >
         <FlexBetween gap="1rem">
           <UserImage image={picturePath} />
@@ -76,20 +82,21 @@ const UserWidget = ({ userId, picturePath }) => {
             <Typography
               variant="h4"
               color={dark}
-              fontWeight="500"
+              fontWeight="600"
               sx={{
                 "&:hover": {
-                  color: palette.primary.light,
+                  color: palette.primary.main,
                   cursor: "pointer",
                 },
+                textShadow: palette.mode === "dark" ? "0 0 1px rgba(255,255,255,0.1)" : "none",
               }}
             >
               {firstName} {lastName}
             </Typography>
-            <Typography color={medium}>{friends.length} friends</Typography>
+            <Typography color={medium} fontWeight="500">{friends.length} teman</Typography>
           </Box>
         </FlexBetween>
-        <ManageAccountsOutlined />
+        <ManageAccountsOutlined sx={{ color: palette.primary.main }} />
       </FlexBetween>
 
       <Divider />
@@ -111,14 +118,26 @@ const UserWidget = ({ userId, picturePath }) => {
       {/* THIRD ROW */}
       <Box p="1rem 0">
         <FlexBetween mb="0.5rem">
-          <Typography color={medium}>Who's viewed your profile</Typography>
-          <Typography color={main} fontWeight="500">
+          <Typography color={medium}>Pengunjung profil</Typography>
+          <Typography color={main} fontWeight="600" sx={{ 
+            backgroundColor: palette.primary.light,
+            color: palette.mode === "dark" ? "white" : "black",
+            borderRadius: "1rem",
+            padding: "0.2rem 0.8rem",
+            fontSize: "0.9rem"
+          }}>
             {viewedProfile}
           </Typography>
         </FlexBetween>
         <FlexBetween>
-          <Typography color={medium}>Impressions of your post</Typography>
-          <Typography color={main} fontWeight="500">
+          <Typography color={medium}>Impresi postingan</Typography>
+          <Typography color={main} fontWeight="600" sx={{ 
+            backgroundColor: palette.primary.light,
+            color: palette.mode === "dark" ? "white" : "black",
+            borderRadius: "1rem",
+            padding: "0.2rem 0.8rem",
+            fontSize: "0.9rem"
+          }}>
             {impressions}
           </Typography>
         </FlexBetween>
@@ -128,8 +147,8 @@ const UserWidget = ({ userId, picturePath }) => {
 
       {/* FOURTH ROW */}
       <Box p="1rem 0">
-        <Typography fontSize="1rem" color={main} fontWeight="500" mb="1rem">
-          Social Profiles
+        <Typography fontSize="1.1rem" color={main} fontWeight="600" mb="1rem">
+          Profil Sosial
         </Typography>
 
         <FlexBetween gap="1rem" mb="0.5rem">
@@ -150,7 +169,7 @@ const UserWidget = ({ userId, picturePath }) => {
               const username = prompt("Enter your Twitter username:");
               if (username) {
                 const response = await fetch(
-                  `http://localhost:3000/users/${userId}/social-profiles`,
+                  `http://localhost:3001/users/${userId}/social-profiles`,
                   {
                     method: "PATCH",
                     headers: { 
@@ -191,7 +210,7 @@ const UserWidget = ({ userId, picturePath }) => {
               const username = prompt("Enter your LinkedIn username:");
               if (username) {
                 const response = await fetch(
-                  `http://localhost:3000/users/${userId}/social-profiles`,
+                  `http://localhost:3001/users/${userId}/social-profiles`,
                   {
                     method: "PATCH",
                     headers: { 

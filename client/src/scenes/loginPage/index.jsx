@@ -12,8 +12,35 @@ const LoginPage = () => {
         p="1rem 6%"
         textAlign="center"
       >
-        <Typography fontWeight="bold" fontSize="32px" color="primary">
-          Insta
+        <Typography 
+          fontWeight="bold" 
+          fontSize="32px" 
+          color="primary"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "0.5rem",
+          }}
+        >
+          <Box
+            component="span"
+            sx={{
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.background.alt,
+              borderRadius: "50%",
+              width: "40px",
+              height: "40px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "1.2rem",
+              fontWeight: "bold",
+            }}
+          >
+            H
+          </Box>
+          HashiiSocial
         </Typography>
       </Box>
 
@@ -25,7 +52,7 @@ const LoginPage = () => {
         backgroundColor={theme.palette.background.alt}
       >
         <Typography fontWeight="500" variant="h5" sx={{ mb: "1.5rem" }}>
-          Welcome to Socipedia, the Social Media for Sociopaths!
+          Selamat Datang di HashiiSocial, Tempat Terbaik untuk Terhubung!
         </Typography>
         <Form />
       </Box>

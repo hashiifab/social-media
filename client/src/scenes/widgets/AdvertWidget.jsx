@@ -12,24 +12,31 @@ const AdvertWidget = () => {
     <WidgetWrapper>
       <FlexBetween>
         <Typography color={dark} variant="h5" fontWeight="500">
-          Sponsored
+          Sponsor Pilihan
         </Typography>
-        <Typography color={medium}>Create Ad</Typography>
+        <Typography color={medium}>Buat Iklan</Typography>
       </FlexBetween>
       <img
         width="100%"
         height="auto"
         alt="advert"
-        src="http://localhost:3000/assets/info4.jpeg"
-        style={{ borderRadius: "0.75rem", margin: "0.75rem 0" }}
+        src="http://localhost:3001/assets/info4.jpeg"
+        style={{ 
+          borderRadius: "1rem", 
+          margin: "0.75rem 0",
+          boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+          transition: "transform 0.3s ease",
+          '&:hover': {
+            transform: "scale(1.02)"
+          }
+        }}
       />
       <FlexBetween>
-        <Typography color={main}>MikaCosmetics</Typography>
-        <Typography color={medium}>mikacosmetics.com</Typography>
+        <Typography color={main} fontWeight="500">HashiiStore</Typography>
+        <Typography color={medium}>hashiistore.com</Typography>
       </FlexBetween>
-      <Typography color={medium} m="0.5rem 0">
-        Your pathway to stunning and immaculate beauty and made sure your skin
-        is exfoliating skin and shining like light.
+      <Typography color={main} m="0.5rem 0">
+        Temukan produk digital terbaik untuk kebutuhan Anda. Kualitas premium dengan harga terjangkau, hanya di HashiiStore.
       </Typography>
     </WidgetWrapper>
   );

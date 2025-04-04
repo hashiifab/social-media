@@ -2,7 +2,6 @@ import {
   EditOutlined,
   DeleteOutlined,
   AttachFileOutlined,
-  GifBoxOutlined,
   ImageOutlined,
   MicOutlined,
   MoreHorizOutlined,
@@ -72,7 +71,7 @@ const MyPostWidget = ({ picturePath }) => {
       formData.append("audioPath", audio.name);
     }
 
-    const response = await fetch(`http://localhost:3000/posts`, {
+    const response = await fetch(`http://localhost:3001/posts`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body: formData,

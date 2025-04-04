@@ -141,3 +141,29 @@ export const likePost = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
+/* DELETE */
+export const deletePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.body;
+
+    const post = await Post.findById(id);
+    if (!post) {
+      return res.status(404).json({ message: "Post tidak ditemukan" });
+    }
+
+    // Verifikasi bahwa pengguna yang menghapus adalah pemilik postingan
+    if (post.userId !== userId) {
+      return res.status(403).json({ message: "Anda tidak memiliki izin untuk menghapus postingan ini" });
+    }
+
+    await Post.findByIdAndDelete(id);
+
+    // Mengembalikan semua postingan setelah penghapusan
+    const posts = await Post.find();
+    res.status(200).json(posts);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}

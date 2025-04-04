@@ -4,6 +4,7 @@ import {
   FavoriteOutlined,
   ShareOutlined,
   PictureAsPdfOutlined,
+  DeleteOutlined,
 } from "@mui/icons-material";
 import { Box, Divider, IconButton, Typography, useTheme, Button, TextField } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
@@ -11,7 +12,7 @@ import Friend from "components/Friend";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPost } from "state";
+import { setPost, setPosts, removePost } from "state";
 
 const PostWidget = ({
   postId,
@@ -39,7 +40,7 @@ const PostWidget = ({
   const primary = palette.primary.main;
 
   const patchLike = async () => {
-    const response = await fetch(`http://localhost:3000/posts/${postId}/like`, {
+    const response = await fetch(`http://localhost:3001/posts/${postId}/like`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -49,6 +50,30 @@ const PostWidget = ({
     });
     const updatedPost = await response.json();
     dispatch(setPost({ post: updatedPost }));
+  };
+
+  const deletePost = async () => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus postingan ini?")) {
+      try {
+        const response = await fetch(`http://localhost:3001/posts/${postId}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: loggedInUserId }),
+        });
+        
+        if (response.ok) {
+          // Gunakan reducer removePost untuk menghapus postingan dari state
+          dispatch(removePost({ postId }));
+        } else {
+          console.error("Gagal menghapus postingan");
+        }
+      } catch (error) {
+        console.error("Error deleting post:", error);
+      }
+    }
   };
 
   return (
@@ -68,7 +93,7 @@ const PostWidget = ({
           height="auto"
           alt="post"
           style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-          src={`http://localhost:3000/assets/${picturePath}`}
+          src={`http://localhost:3001/assets/${picturePath}`}
         />
       )}
       {clipPath && (
@@ -77,7 +102,7 @@ const PostWidget = ({
           height="auto"
           controls
           style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-          src={`http://localhost:3000/assets/${clipPath}`}
+          src={`http://localhost:3001/assets/${clipPath}`}
         />
       )}
       {attachmentPath && (
@@ -97,7 +122,7 @@ const PostWidget = ({
               Attachment: {attachmentPath}
             </Typography>
             <a 
-              href={`http://localhost:3000/assets/${attachmentPath}`} 
+              href={`http://localhost:3001/assets/${attachmentPath}`} 
               download
               style={{ textDecoration: "none" }}
             >
@@ -124,7 +149,7 @@ const PostWidget = ({
                   </Typography>
                 </Box>
                 <a 
-                  href={`http://localhost:3000/assets/${attachmentPath}`} 
+                  href={`http://localhost:3001/assets/${attachmentPath}`} 
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ textDecoration: "none" }}
@@ -149,7 +174,7 @@ const PostWidget = ({
           {attachmentPath.toLowerCase().match(/\.(jpeg|jpg|png|gif)$/) && (
             <Box sx={{ width: "100%", overflow: "hidden", borderRadius: "0.5rem" }}>
               <img
-                src={`http://localhost:3000/assets/${attachmentPath}`}
+                src={`http://localhost:3001/assets/${attachmentPath}`}
                 alt={attachmentPath}
                 style={{ width: "100%", height: "auto", borderRadius: "0.5rem" }}
               />
@@ -189,9 +214,16 @@ const PostWidget = ({
           </FlexBetween>
         </FlexBetween>
 
-        <IconButton>
-          <ShareOutlined />
-        </IconButton>
+        <FlexBetween gap="0.5rem">
+          {postUserId === loggedInUserId && (
+            <IconButton onClick={deletePost} sx={{ color: palette.neutral.medium }}>
+              <DeleteOutlined />
+            </IconButton>
+          )}
+          <IconButton>
+            <ShareOutlined />
+          </IconButton>
+        </FlexBetween>
       </FlexBetween>
       {isComments && (
         <Box mt="0.5rem">
@@ -221,7 +253,7 @@ const PostWidget = ({
               disabled={!comment}
               onClick={async () => {
                 const response = await fetch(
-                  `http://localhost:3000/posts/${postId}/comment`,
+                  `http://localhost:3001/posts/${postId}/comment`,
                   {
                     method: "PATCH",
                     headers: {

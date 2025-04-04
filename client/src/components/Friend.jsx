@@ -22,29 +22,53 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
   const isFriend = friends.find((friend) => friend._id === friendId);
 
   const patchFriend = async () => {
-    const response = await fetch(
-      `http://localhost:3000/users/${_id}/${friendId}`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+    // Mencegah menambahkan diri sendiri sebagai teman
+    if (friendId === _id) {
+      console.error("Tidak bisa menambahkan diri sendiri sebagai teman");
+      return;
+    }
+
+    // Mencegah request ganda saat proses masih berjalan
+    if (patchFriend.isLoading) return;
+    patchFriend.isLoading = true;
+
+    try {
+      const response = await fetch(
+        `http://localhost:3001/users/${_id}/${friendId}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      
+      if (response.ok && Array.isArray(data)) {
+        // Memastikan tidak ada duplikasi ID teman
+        const uniqueFriends = data.filter((friend, index, self) =>
+          index === self.findIndex((f) => f._id === friend._id)
+        );
+        dispatch(setFriends({ friends: uniqueFriends }));
+      } else {
+        console.error("Failed to update friend status:", data.message || "Unknown error");
       }
-    );
-    const data = await response.json();
-    dispatch(setFriends({ friends: data }));
+    } catch (error) {
+      console.error("Error updating friend status:", error);
+    } finally {
+      patchFriend.isLoading = false;
+    }
   };
+
+  patchFriend.isLoading = false;
 
   return (
     <FlexBetween>
       <FlexBetween gap="1rem">
         <UserImage image={userPicturePath} size="55px" />
         <Box
-          onClick={() => {
-            navigate(`/profile/${friendId}`);
-            navigate(0);
-          }}
+          onClick={() => navigate(`/profile/${friendId}`)}
         >
           <Typography
             color={main}
