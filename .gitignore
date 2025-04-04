@@ -1,0 +1,47 @@
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Dependencies
+node_modules/
+
+# Build files
+build/
+dist/
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+
+# Sistem Operasi
+.DS_Store
+
+# Testing
+coverage/
+
+# Client specific
+client/.env
+client/build/
+
+# Server specific
+server/.env
+server/node_modules/
+
+# Editor temporary files
+*.swp
+*.swo
+
+# Package manager files
+package-lock.json
+yarn.lock
+
+# Debug files
+*.pid
+*.seed
