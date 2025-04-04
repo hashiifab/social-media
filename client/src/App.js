@@ -4,7 +4,7 @@ import LoginPage from "scenes/loginPage";
 import ProfilePage from "scenes/profilePage";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
-import { CssBaseline, ThemeProvider } from "@mui/material";
+import { Box, CssBaseline, Link, ThemeProvider, Typography } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { themeSettings } from "./theme";
 
@@ -29,6 +29,30 @@ function App() {
               element={isAuth ? <ProfilePage /> : <Navigate to="/" />}
             />
           </Routes>
+
+          {/* Footer Copyright */}
+          <Box sx={{ 
+            mt: 'auto', 
+            py: 3, 
+            backgroundColor: (theme) => theme.palette.background.paper,
+            borderTop: (theme) => `1px solid ${theme.palette.divider}`
+          }}>
+            <Typography variant="body2" color="text.secondary" align="center">
+              Developed by{" "}      
+              <Link 
+                href="https://www.linkedin.com/in/hashiif-abdillah-665373297" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                sx={{ 
+                  color: (theme) => theme.palette.primary.main,
+                  fontWeight: 500,
+                  '&:hover': { textDecoration: 'underline' }
+                }}
+              >
+                 Hasseeve
+              </Link>
+            </Typography>
+          </Box>
         </ThemeProvider>
       </BrowserRouter>
     </div>

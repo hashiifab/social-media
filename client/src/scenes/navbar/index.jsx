@@ -74,7 +74,7 @@ const Navbar = ({ toggleDrawer }) => {
           >
             H
           </Box>
-          {isSmallScreens ? "HS" : "HashiiSocial"}
+          {isSmallScreens ? "HS" : "Hinstagram"}
         </Typography>
       </FlexBetween>
 

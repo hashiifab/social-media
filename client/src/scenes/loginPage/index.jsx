@@ -40,7 +40,7 @@ const LoginPage = () => {
           >
             H
           </Box>
-          HashiiSocial
+          Hinstagram
         </Typography>
       </Box>
 
@@ -52,7 +52,7 @@ const LoginPage = () => {
         backgroundColor={theme.palette.background.alt}
       >
         <Typography fontWeight="500" variant="h5" sx={{ mb: "1.5rem" }}>
-          Selamat Datang di HashiiSocial, Tempat Terbaik untuk Terhubung!
+          Selamat Datang di Hinstagram, Tempat Terbaik untuk Terhubung!
         </Typography>
         <Form />
       </Box>
